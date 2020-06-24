@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "440008476410",
+    "firebase_url": "https://kawankombur.firebaseio.com",
+    "project_id": "kawankombur",
+    "storage_bucket": "kawankombur.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440008476410:android:8a7a761a9cc495cadaab43",
+        "android_client_info": {
+          "package_name": "com.teguh.kawankombur"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "440008476410-ffp85hv72qqadp1ffnssif8r1v6vpa1n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQH-qk1nyZZ1iJppUCKLwNoXQlSKsnpVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "440008476410-ffp85hv72qqadp1ffnssif8r1v6vpa1n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
