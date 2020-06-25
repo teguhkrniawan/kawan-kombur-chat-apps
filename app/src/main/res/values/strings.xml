@@ -14,4 +14,14 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="chats">Chats</string>
     <string name="search_contact">Search Contact</string>
+    <string name="butuh_kawan_bicara">Butuh Kawan Bicara ?</string>
+    <string name="mulai_dengan_daftarkan_dirimu_di_kawan_kombur">Mulai dengan daftarkan dirimu di Kawan Kombur</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="selamat_datang">Selamat Datang</string>
+    <string name="jadikan_bicara_semakin_mudah_dengan_kawan_kombur">Jadikan bicara semakin mudah dengan Kawan Kombur</string>
+    <string name="login">Login</string>
+    <string name="welcome">Welcome</string>
+    <string name="description_welcome">ayo mulai mencari kawan kombur, dan dapatkan teman</string>
 </resources>
