@@ -97,8 +97,8 @@ class RegisterActivity : AppCompatActivity() {
                     userHashMap["email"] = email
                     userHashMap["username"] = username
                     userHashMap["password"] = password
-                    userHashMap["picture"] = "gs://kawankombur.appspot.com/profile.png"
-                    userHashMap["cover"] = "gs://kawankombur.appspot.com/cover.jpg"
+                    userHashMap["picture"] = "https://firebasestorage.googleapis.com/v0/b/kawankombur.appspot.com/o/profile.png?alt=media&token=4fb55571-d18a-4e4b-8617-93d8c2c95c60"
+                    userHashMap["cover"] = "https://firebasestorage.googleapis.com/v0/b/kawankombur.appspot.com/o/cover.jpg?alt=media&token=867262b6-e68d-463a-ae11-c8a980b29419"
                     userHashMap["status"] = "offline"
                     userHashMap["seacrh"] = username.toLowerCase()
                     userHashMap["facebook"] = "https://m.facebook.com"

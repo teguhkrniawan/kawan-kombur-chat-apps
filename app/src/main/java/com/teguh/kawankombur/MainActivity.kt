@@ -1,28 +1,50 @@
 package com.teguh.kawankombur
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
+import com.squareup.picasso.Picasso
 import com.teguh.kawankombur.fragments.ChatsFragment
 import com.teguh.kawankombur.fragments.SearchFragment
 import com.teguh.kawankombur.fragments.SettingsFragment
+import com.teguh.kawankombur.model.Users
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    // deklarasi properti
+    var firebaseUser: FirebaseUser? = null
+    var refUsers: DatabaseReference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(main_toolbar)
+
+        // instance objek
+        firebaseUser = FirebaseAuth.getInstance().currentUser // user yg login
+        refUsers = FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser!!.uid) // referebce objek dimana uid = firebaseUser
+
+        // binding findviewbyid xml
+        val usernameText = findViewById<TextView>(R.id.username_text)
+        val profileImage = findViewById<ImageView>(R.id.profile_image)
+
         // Deklarasi variabel Toolbar setting
         val toolbar: Toolbar = findViewById(R.id.main_toolbar)
         setSupportActionBar(toolbar)
@@ -41,6 +63,26 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = viewPagerAdapter
         tabLayout.setupWithViewPager(viewPager)
 
+        // menampilkan username dan profile picture sesuai database
+        refUsers!!.addValueEventListener(object: ValueEventListener{
+            // ketika data diubah
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.exists()) {
+                    // buat objek dari class Users, dimana datasnapshot dikirimkan ke class users
+                    val user: Users? = p0.getValue(Users::class.java)
+                    usernameText.text = user!!.getUsername()
+                    Picasso
+                        .get()
+                        .load(user.getPicture())
+                        .placeholder(R.drawable.ic_profile)
+                        .into(profileImage)
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -53,10 +95,19 @@ class MainActivity : AppCompatActivity() {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            R.id.action_logout -> {
+                // ambil instance firebaseAuth
+                FirebaseAuth.getInstance().signOut()
+                // lakukan intent
+                val intent = Intent(this@MainActivity, WelcomeActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
+            }
+
         }
+        return false
     }
 
     /**

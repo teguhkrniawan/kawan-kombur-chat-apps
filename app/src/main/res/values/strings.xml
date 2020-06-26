@@ -24,4 +24,6 @@
     <string name="login">Login</string>
     <string name="welcome">Welcome</string>
     <string name="description_welcome">ayo mulai mencari kawan kombur, dan dapatkan teman</string>
+    <string name="log_out">Log out</string>
+    <string name="loading">loading..</string>
 </resources>
