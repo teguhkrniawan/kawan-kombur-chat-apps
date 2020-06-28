@@ -26,4 +26,5 @@
     <string name="description_welcome">ayo mulai mencari kawan kombur, dan dapatkan teman</string>
     <string name="log_out">Log out</string>
     <string name="loading">loading..</string>
+    <string name="ketik_username_yang_ingin_dicari">Ketik username yang ingin dicari</string>
 </resources>

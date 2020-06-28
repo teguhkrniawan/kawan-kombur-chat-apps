@@ -2,7 +2,7 @@ package com.teguh.kawankombur.model
 
 
 class Users {
-    // deklrasi properti
+    // deklrasi properti dan primary constructor
     private var uid: String = ""
     private var username: String = ""
     private var picture: String = ""
@@ -15,6 +15,7 @@ class Users {
 
     constructor()
 
+    // secondary constructor
     constructor(
         uid: String,
         username: String,
@@ -37,6 +38,7 @@ class Users {
         this.website = website
     }
 
+    // setter dan getter dari properti
     fun getUID(): String{
         return uid
     }

@@ -29,9 +29,6 @@ class RegisterActivity : AppCompatActivity() {
         // deklrarasi variabel xml register
         val registerButton = findViewById<Button>(R.id.register_button)
 
-        // deklarasi dialog loading
-        val dialog: android.app.AlertDialog? = SpotsDialog.Builder().setContext(this).build()
-
         // Deklarasi variabel Toolbar setting
         val toolbar: Toolbar = findViewById(R.id.register_toolbar)
         setSupportActionBar(toolbar)
@@ -49,7 +46,6 @@ class RegisterActivity : AppCompatActivity() {
 
         // ketika button registes ditap
         registerButton.setOnClickListener(){
-            dialog!!.show()
             registerUser()
         }
 
@@ -66,6 +62,9 @@ class RegisterActivity : AppCompatActivity() {
         val username: String = usernameEdit.text.toString()
         val password: String = passwordEdit.text.toString()
 
+        // deklarasi dialog loading
+        val dialog: android.app.AlertDialog = SpotsDialog.Builder().setContext(this).build()
+
         // cek apakah inputan pada masing-masing editText kosong
         if (email == ""){
             Toast.makeText(this@RegisterActivity, "Silahkan isi email terlebih dahulu", Toast.LENGTH_SHORT).show()
@@ -79,6 +78,7 @@ class RegisterActivity : AppCompatActivity() {
              * @param : email dari editText
              * @param : password dari editText
              */
+            dialog.show()
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener{ task ->
                 if (task.isSuccessful){
 
@@ -100,7 +100,7 @@ class RegisterActivity : AppCompatActivity() {
                     userHashMap["picture"] = "https://firebasestorage.googleapis.com/v0/b/kawankombur.appspot.com/o/profile.png?alt=media&token=4fb55571-d18a-4e4b-8617-93d8c2c95c60"
                     userHashMap["cover"] = "https://firebasestorage.googleapis.com/v0/b/kawankombur.appspot.com/o/cover.jpg?alt=media&token=867262b6-e68d-463a-ae11-c8a980b29419"
                     userHashMap["status"] = "offline"
-                    userHashMap["seacrh"] = username.toLowerCase()
+                    userHashMap["search"] = username.toLowerCase()
                     userHashMap["facebook"] = "https://m.facebook.com"
                     userHashMap["instagram"] = "htrps://m.instagram.com"
                     userHashMap["website"] = "https://www.github.com/teguhkrniawan"
@@ -119,8 +119,10 @@ class RegisterActivity : AppCompatActivity() {
                     }
 
                 }else {
+                    dialog.cancel()
                     Toast.makeText(this@RegisterActivity, "Gagal Mendaftar Akun", Toast.LENGTH_SHORT).show()
                     Log.e("Task Register", "error message: " +task.exception!!.message.toString())
+
                 }
             }
         }

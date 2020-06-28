@@ -3,6 +3,7 @@ package com.teguh.kawankombur
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -27,9 +28,6 @@ class LoginActivity : AppCompatActivity() {
         // deklrarasi variabel xml login
         val loginButton = findViewById<Button>(R.id.login_button)
 
-        // dekarasi dialog loading
-        val dialog: android.app.AlertDialog? = SpotsDialog.Builder().setContext(this).build()
-
         // Deklarasi variabel Toolbar setting
         val toolbar: Toolbar = findViewById(R.id.login_toolbar)
         setSupportActionBar(toolbar)
@@ -47,7 +45,6 @@ class LoginActivity : AppCompatActivity() {
 
         // jalankan function login ketika button_login diklik
         loginButton.setOnClickListener(){
-            dialog!!.show()
             loginUser()
         }
 
@@ -61,6 +58,9 @@ class LoginActivity : AppCompatActivity() {
         val email: String = emailEdit.text.toString()
         val password: String = passwordEdit.text.toString()
 
+        // dekarasi dialog loading
+        val dialog: android.app.AlertDialog = SpotsDialog.Builder().setContext(this).build()
+
         // lakukan pengecekan
         if (email == ""){
             Toast.makeText(this@LoginActivity, "Silahkan isi email terlebih dahulu", Toast.LENGTH_SHORT).show()
@@ -72,6 +72,7 @@ class LoginActivity : AppCompatActivity() {
              * @param : email dari editText
              * @param : password dari editText
              */
+            dialog.show()
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener{ task->
                 if (task.isSuccessful){
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
@@ -79,7 +80,8 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 }else {
-                    Toast.makeText(this@LoginActivity, "Gagal Mendaftar Akun", Toast.LENGTH_SHORT).show()
+                    dialog.cancel()
+                    Toast.makeText(this@LoginActivity, "Cek Kembali username dan password", Toast.LENGTH_SHORT).show()
                     Log.e("Task Login", "error message: " +task.exception!!.message.toString())
                 }
             }

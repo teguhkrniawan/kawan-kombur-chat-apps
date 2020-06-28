@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/search_profile_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_profile" />
+
+    <TextView
+        android:id="@+id/search_username_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/loading"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="16dp"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:fontFamily="@font/roboto"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@id/search_profile_image"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_online"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_toEndOf="@id/search_profile_image"
+        android:layout_below="@id/search_username_text"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="-15dp"
+        android:src="@android:color/black"
+        app:civ_border_width="12dp"
+        app:civ_border_color="#05df26"
+        android:visibility="gone"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_offline"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_toEndOf="@id/search_profile_image"
+        android:layout_below="@id/search_username_text"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="-15dp"
+        android:src="@android:color/black"
+        app:civ_border_width="12dp"
+        app:civ_border_color="#bfbfbf"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/message_last"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@string/loading"
+        android:textSize="14sp"
+        android:fontFamily="@font/roboto"
+        android:maxLines="1"
+        android:textColor="@android:color/darker_gray"
+        android:layout_below="@id/search_username_text"
+        android:layout_toEndOf="@id/search_profile_image"/>
+
+</RelativeLayout>
