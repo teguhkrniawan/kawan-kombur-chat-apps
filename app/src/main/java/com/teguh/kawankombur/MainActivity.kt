@@ -30,8 +30,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     // deklarasi properti
-    var firebaseUser: FirebaseUser? = null
-    var refUsers: DatabaseReference? = null
+    private var firebaseUser: FirebaseUser? = null
+    private lateinit var refUsers: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,26 +64,25 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = viewPagerAdapter
         tabLayout.setupWithViewPager(viewPager)
 
-        // menampilkan username dan profile picture sesuai database
-        refUsers!!.addValueEventListener(object: ValueEventListener{
-            // ketika data diubah
-            override fun onDataChange(p0: DataSnapshot) {
-                if (p0.exists()) {
-                    // buat objek dari class Users, dimana datasnapshot dikirimkan ke class users
-                    val user: Users? = p0.getValue(Users::class.java)
-                    usernameText.text = user!!.getUsername()
-                    Picasso
-                        .get()
-                        .load(user.getPicture())
-                        .placeholder(R.drawable.ic_profile)
-                        .into(profileImage)
-                }
-            }
-
+        refUsers.addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
-
+                Toast.makeText(this@MainActivity, "Error : "+p0.message, Toast.LENGTH_SHORT).show()
             }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+               if (dataSnapshot.exists()){
+                  val user: Users? = dataSnapshot.getValue(Users::class.java)
+                   usernameText.text = user!!.getUsername()
+                   Picasso
+                       .get()
+                       .load(user.getPicture())
+                       .placeholder(R.drawable.ic_profile)
+                       .into(profileImage)
+               }
+            }
+
         })
+
     }
 
 

@@ -1,60 +1,108 @@
 package com.teguh.kawankombur.fragments
 
+import android.app.Activity
+import android.app.ProgressDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import com.google.android.gms.tasks.Continuation
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.StorageTask
+import com.google.firebase.storage.UploadTask
+import com.squareup.picasso.Picasso
 import com.teguh.kawankombur.R
+import com.teguh.kawankombur.model.Users
+import kotlinx.android.synthetic.main.fragment_settings.*
+import kotlinx.android.synthetic.main.fragment_settings.view.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    // primary konstruktor
+    var refUsers: DatabaseReference? = null
+    var firebaseUser: FirebaseUser? = null
+    private val requestCodeProperti = 438 // request code, sebagai penanda perpindahan data intent
+    private var imageUri: Uri? = null // variabel penampung gambar yg dipilih
+    private var storageRef: StorageReference? = null
+    private var coverCheck: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_settings, container, false)
+
+        firebaseUser = FirebaseAuth.getInstance().currentUser
+        refUsers = FirebaseDatabase.getInstance().reference.child("Users").child(firebaseUser!!.uid) // path database
+        storageRef = FirebaseStorage.getInstance().reference.child("User Image") // path storage
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SettingsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    //function untuk mengambil gambar dari galeri secara intent implisit
+    private fun ambilGambar() {
+        val intent = Intent() // objek dari class intent
+        intent.type = "image/*" // semua jenis gambar
+        intent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(intent, requestCodeProperti)
+    }
+
+
+    // upload data ke storage
+    private fun uploadKeStorage() {
+        val progressBar = ProgressDialog(context)
+        progressBar.setMessage("Gambar sedang diupload...")
+        progressBar.show()
+
+        if (imageUri != null){
+            val fileRef = storageRef!!.child(System.currentTimeMillis().toString() + ".jpg") // membuat nama file menjadi detikskrg.jpg
+
+            var uploadTask: StorageTask<*>
+            uploadTask = fileRef.putFile(imageUri!!) // upload task valuenya skrg gambar yg dipilih pengguna
+
+            uploadTask.continueWithTask(Continuation <UploadTask.TaskSnapshot, Task<Uri>> { task->
+                if (!task.isSuccessful){
+                    task.exception?. let {
+                        throw it
+                    }
+                }
+                return@Continuation fileRef.downloadUrl
+            }).addOnCompleteListener() { task->
+                if (task.isSuccessful){
+                    val downloadUrl = task.result
+                    val url = downloadUrl.toString()
+
+                    if (coverCheck == "cover"){
+                        val mapCover = HashMap<String, Any>()
+                        mapCover["cover"] = url
+                        refUsers!!.updateChildren(mapCover)
+                        coverCheck = ""
+                    } else{
+                        val mapPicture = HashMap<String, Any>()
+                        mapPicture["picture"] = url
+                        refUsers!!.updateChildren(mapPicture)
+                        coverCheck = ""
+                    }
+                    progressBar.dismiss()
                 }
             }
+
+        }
     }
+
+
 }

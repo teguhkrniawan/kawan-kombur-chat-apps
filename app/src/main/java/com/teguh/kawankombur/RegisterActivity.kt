@@ -124,6 +124,7 @@ class RegisterActivity : AppCompatActivity() {
                     Log.e("Task Register", "error message: " +task.exception!!.message.toString())
 
                 }
+                dialog.cancel()
             }
         }
     }

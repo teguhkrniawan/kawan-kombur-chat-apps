@@ -15,24 +15,15 @@ import kotlinx.android.synthetic.main.user_search_item_layout.view.*
 import org.w3c.dom.Text
 
 // adapter recyclerview user
-class UserAdapter(mContext: Context, mUsers: List<Users>, isChatCheck: Boolean) :
-    RecyclerView.Adapter<UserAdapter.ViewHolder?>() {
+class UserAdapter(val mContext: Context, isChatCheck: Boolean
+    ) : RecyclerView.Adapter<UserAdapter.ViewHolder?>() {
 
-    // properti class
-    private val mContext: Context
-    private val mUsers: List<Users>
-    private val isChatBoolean: Boolean
-
-    init {
-        this.mContext = mContext
-        this.mUsers = mUsers
-        this.isChatBoolean = isChatCheck
-    }
+    val mUsers: MutableList<Users> = mutableListOf()
 
     // function yg melakukan inflate item ke recyvlerview
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(mContext).inflate(R.layout.user_search_item_layout, viewGroup, false)
-        return UserAdapter.ViewHolder(view)
+        return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
@@ -42,36 +33,32 @@ class UserAdapter(mContext: Context, mUsers: List<Users>, isChatCheck: Boolean) 
     // function yg melakukan masing" id itu melakukan apa
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        isiModelUsers(holder, position)
+//      isiModelUsers(holder, position)
+        val user: Users = mUsers[position] // menjadikan list mUsers yg posisinya masing" kedalam objek
+        holder.bindModel(user)
+    }
 
-        val user: Users? = mUsers[position] // menjadikan list mUsers yg posisinya masing" kedalam objek
-        holder.usernameText.text = user!!.getUsername()
-        Picasso.get().load(user.getPicture()).placeholder(R.drawable.ic_profile).into(holder.profileSearch)
+    fun setUsers(data: List<Users>){
+        mUsers.clear()
+        mUsers.addAll(data)
+        notifyDataSetChanged()
     }
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        // properti pada class
-        var usernameText: TextView
-        var profileSearch: CircleImageView
-        var onlineImage: CircleImageView
-        var offlineImage: CircleImageView
-        var lastMessageText: TextView
+        val username: TextView = itemView.findViewById(R.id.search_username_text)
+        val profilePicture: CircleImageView = itemView.findViewById(R.id.search_profile_image)
 
-        // init digunakan untuk menambahkan perintah kode lainnya selain primary constructor
-        // tetapi tetap dijalankan pertama
-        init {
-            usernameText = itemView.findViewById(R.id.search_username_text)
-            profileSearch = itemView.findViewById(R.id.search_profile_image)
-            onlineImage = itemView.findViewById(R.id.profile_online)
-            offlineImage = itemView.findViewById(R.id.profile_offline)
-            lastMessageText = itemView.findViewById(R.id.message_last)
+        fun bindModel(user: Users){
+            username.text = user.getUsername()
+            Picasso.get().load(user.getPicture()).placeholder(R.drawable.ic_profile).into(profilePicture)
         }
+
     }
 
     fun isiModelUsers(holder: ViewHolder, position: Int){
-        val user: Users? = mUsers[position]
-        Log.i("Model in BindViewHolder", "username: "+user!!.getUsername())
+        val user: Users = mUsers[position]
+        Log.i("Model in BindViewHolder", "username: "+user.getUsername())
         Log.i("Model in BindViewHolder", "profilePict: "+user.getPicture())
     }
 

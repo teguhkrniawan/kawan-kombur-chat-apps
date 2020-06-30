@@ -1,15 +1,15 @@
 package com.teguh.kawankombur.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.widget.addTextChangedListener
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -26,141 +26,46 @@ import kotlin.collections.ArrayList
 
 class SearchFragment : Fragment() {
 
-    // properti
+    lateinit var userAdapter: UserAdapter
+    val lm = LinearLayoutManager(activity)
+    val setUsersList: MutableList<Users> = ArrayList()
 
-    private var userAdapter: UserAdapter? = null // objek class UserAdapter yg valuenya null
-    private var mUsers: List<Users>? = null // objek collecction yg menampung class Users
-    private var searchRecyclerview: RecyclerView? = null // objek reclerview yg nilalnya null
+    val userUID = FirebaseAuth.getInstance().currentUser!!.uid
+    val refUsers = FirebaseDatabase.getInstance().reference.child("Users")
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_search, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        // dekllarasi xml dengan findviewbyid
+        search_recyclerview.layoutManager = lm
+        userAdapter = UserAdapter(requireActivity(), false)
+        search_recyclerview.adapter = userAdapter
 
-        val searchUserEdit = view.findViewById<EditText>(R.id.searh_user_edit)
-        searchRecyclerview = view.findViewById<RecyclerView>(R.id.search_recyclerview)
-
-        // lakukan setting tampilan pada recyclerview
-
-        searchRecyclerview!!.setHasFixedSize(true)
-        searchRecyclerview!!.layoutManager = LinearLayoutManager(context)
-
-        mUsers = ArrayList() // buat mUsers sebagai arraylist
-        tampilSemuaUsers() // panggil function tampilSemuaUsers
-
-
-        // ketika editText search user disorot
-        searchUserEdit.addTextChangedListener(object: TextWatcher{
-            // sebelum sorot
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-            // pas disorot, atau sedehananya pengguna aplikasi kita ngetik sesuatu
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                // panggil function proses pencarian
-                searchUser(p0.toString().toLowerCase(Locale.ROOT))
-            }
-
-            // setelah disorot
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-        })
-
-        return view
+        initView()
     }
-
 
     // function tampil semua users
-    private fun tampilSemuaUsers() {
+    private fun initView() {
 
-        val firebaseUserID = FirebaseAuth.getInstance().currentUser!!.uid // uid user yg login
-        val refUsers = FirebaseDatabase.getInstance().reference.child("Users") // mengambil data semua Users
-
-        refUsers.addValueEventListener(object: ValueEventListener{
-
-            override fun onDataChange(p0: DataSnapshot) {
-                // mUsers kan pertama bernilai null , maka kita kosongkan
-                (mUsers as ArrayList<Users>).clear() // as adalah typecast yg memaksa mUsers untuk di konversikan sebagai arraylist<Users>,  jika tidak sesuai maka error: class cast exception
-                // lakukan perulangan untuk mengambil data user dalam objek p0
-                for (snapshot in p0.children){
-                    // masukkan data kedalam model users dulu
-                    val user: Users? = snapshot.getValue(Users::class.java)
-                    // jika user nilai UID nya tidak sama dengan firebaseUserID
-                    if (!(user!!.getUID().equals(firebaseUserID))){
-                        // masukkan semua data ke arraylist
-                        (mUsers as ArrayList<Users>).add(user)
-                    }
-                }
-
-                // kasi value ke userAdapter yg null tadi
-                /**
-                 * @param : context didapat dari parent,artinya fragment ini
-                 * @param : mUsers dari properti yg uda diisi valuenya menjadi arraylist model Users pada function ini
-                 * @param : false merupakan value isChatCheck
-                 */
-                userAdapter = UserAdapter(context!!, mUsers!!, false)
-                // setAdapter untuk adapter recyclerview
-                searchRecyclerview!!.adapter = userAdapter
-            }
-
+        refUsers.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
-
+                Toast.makeText(context, "error pada fragment search addValueListener", Toast.LENGTH_SHORT).show()
             }
-        })
-    }
 
-    // function proses mencari user sesuai inputan yaitu usename
-    private fun searchUser(username: String){
-
-        val firebaseUserID = FirebaseAuth.getInstance().currentUser!!.uid
-        val querySearch = FirebaseDatabase.getInstance().reference.child("Users")
-                                          .orderByChild("search")
-                                          .startAt(username)
-                                          .endAt(username + "\uf8ff") // asumsi sementara uf8ff itu unicode pemgambil karakter, misalkan ketik fre, maka hasilnya fredy, freya,frecuk
-
-        querySearch.addValueEventListener(object: ValueEventListener{
-            override fun onDataChange(p0: DataSnapshot) {
-                // mUsers kan sudah bernilai data dari model Users, yg value nya semua data users, jdi hapus dulu
-                (mUsers as ArrayList<Users>).clear() // as adalah typecast yg memaksa mUsers untuk di konversikan sebagai arraylist<Users>,  jika tidak sesuai maka error: class cast exception
-                // lakukan perulangan untuk mengambil data user dalam objek p0
-                for (snapshot in p0.children){
-                    // masukkan data kedalam model users dulu
-                    val user: Users? = snapshot.getValue(Users::class.java)
-                    // jika user nilai UID nya tidak sama dengan firebaseUserID
-                    if (user!!.getUID() != firebaseUserID){
-                        // masukkan semua data ke arraylist
-                        (mUsers as ArrayList<Users>).add(user)
-                        Log.i("searchET", "onDataChange: "+ (mUsers as ArrayList<Users>).size)
-                    }
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (item in dataSnapshot.children){
+                    val user:  Users? = item.getValue(Users::class.java)
+                    setUsersList.add(user!!)
+                    userAdapter.setUsers(setUsersList)
                 }
-                // kasi value ke userAdapter yg null tadi
-                /**
-                 * @param : context didapat dari parent,artinya fragment ini
-                 * @param : mUsers dari properti yg uda diisi valuenya menjadi arraylist model Users pada function ini
-                 * @param : false merupakan value isChatCheck
-                 */
-                userAdapter = UserAdapter(context!!, mUsers!!, false)
-                // setAdapter untuk adapter recyclerview
-                searchRecyclerview!!.adapter = userAdapter
-
             }
 
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
         })
 
-    }
 
+    }
 
 }
