@@ -6,20 +6,37 @@
     android:padding="16dp"
     tools:context=".fragments.SearchFragment">
 
-    <EditText
-        android:id="@+id/searh_user_edit"
+    <LinearLayout
+        android:id="@+id/linear_textedit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:hint="@string/ketik_username_yang_ingin_dicari"
-        android:autofillHints=""
-        android:inputType="text" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/searh_user_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="@string/ketik_username_yang_ingin_dicari"
+            android:autofillHints=""
+            android:layout_weight="1"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/search"/>
+
+    </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/searh_user_edit"
+        android:layout_below="@id/linear_textedit"
         android:layout_marginTop="6dp"/>
 
 </RelativeLayout>
